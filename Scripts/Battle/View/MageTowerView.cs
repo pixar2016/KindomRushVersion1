@@ -9,6 +9,7 @@ public class MageTowerView : TowerView
     public MageTowerView(AttackTowerInfo towerInfo)
     {
         this.towerInfo = towerInfo;
+        this.towerInfo.eventDispatcher.Register("DoAction", DoAction);
     }
 
     public override void LoadModel()

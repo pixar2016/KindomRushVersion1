@@ -10,6 +10,7 @@ public class ArtilleryTowerView : TowerView
     public ArtilleryTowerView(AttackTowerInfo towerInfo)
     {
         this.towerInfo = towerInfo;
+        this.towerInfo.eventDispatcher.Register("DoAction", DoAction);
     }
 
     public override void LoadModel()
