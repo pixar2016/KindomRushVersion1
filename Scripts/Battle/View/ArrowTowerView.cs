@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using Hero;
+using UnityEngine;
+
+public class ArrowTowerView : TowerView
+{
+    public SpriteImage towerBase;
+    public Animate shooter1;
+    public Animate shooter2;
+    //轮到哪个弓手
+    public int shooterNum;
+    public ArrowTowerView(AttackTowerInfo towerInfo)
+    {
+        this.towerInfo = towerInfo;
+        this.towerInfo.eventDispatcher.Register("DoAction", DoAction);
+        this.shooterNum = 1;
+    }
+
+    public override void LoadModel()
+    {
+        towerAsset = GameLoader.Instance.LoadAssetSync("Resources/Prefabs/ArrowTower.prefab");
+        towerObj = towerAsset.GameObjectAsset;
+        towerObj.transform.position = this.towerInfo.GetPosition();
+        if (towerObj.GetComponent<ClickInfo>() == null)
+        {
+            ClickInfo clickInfo = towerObj.AddComponent<ClickInfo>();
+            clickInfo.OnInit(ClickType.Tower, this.towerInfo.Id, FingerDown);
+        }
+        else
+        {
+            ClickInfo clickInfo = towerObj.GetComponent<ClickInfo>();
+            clickInfo.OnInit(ClickType.Tower, this.towerInfo.Id, FingerDown);
+        }
+        //加载塔身图片
+        GameObject towerBaseObj = towerObj.transform.Find("ArrowTowerBase").gameObject;
+        Vector3 towerBasePos = towerBaseObj.transform.position;
+        towerBasePos.z += 5f;
+        towerBaseObj.transform.position = towerBasePos;
+        if (towerBaseObj.GetComponent<SpriteImage>() != null)
+        {
+            towerBase = towerBaseObj.GetComponent<SpriteImage>();
+        }
+        else
+        {
+            towerBase = towerBaseObj.AddComponent<SpriteImage>();
+        }
+        towerBase.OnInit(towerInfo.towerBase);
+        //加载射手1
+        GameObject shooterObj1 = towerObj.transform.Find("ArrowShooter1").gameObject;
+        if (shooterObj1.GetComponent<Animate>() != null)
+        {
+            shooter1 = shooterObj1.GetComponent<Animate>();
+        }
+        else
+        {
+            shooter1 = shooterObj1.AddComponent<Animate>();
+        }
+        shooter1.OnInit(towerInfo.shooter);
+        shooter1.startAnimation("idle");
+        //加载射手2
+        GameObject shooterObj2 = towerObj.transform.Find("ArrowShooter2").gameObject;
+        if (shooterObj2.GetComponent<Animate>() != null)
+        {
+            shooter2 = shooterObj2.GetComponent<Animate>();
+        }
+        else
+        {
+            shooter2 = shooterObj2.AddComponent<Animate>();
+        }
+
+        //根据塔基座大小增加碰撞盒
+        BoxCollider collider;
+        if (towerObj.GetComponent<BoxCollider>() == null)
+        {
+            collider = towerObj.AddComponent<BoxCollider>();
+            collider.size = new Vector3(towerBase.width, towerBase.height, 0.2f);
+        }
+        else
+        {
+            collider = towerObj.GetComponent<BoxCollider>();
+            collider.size = new Vector3(towerBase.width, towerBase.height, 0.2f);
+        }
+        shooter2.OnInit(towerInfo.shooter);
+        shooter2.startAnimation("idle");
+    }
+
+    public override void DoAction(object[] data)
+    {
+        string actionName = data[0].ToString();
+        if (actionName == "attack")
+        {
+            Attack();
+        }
+        else
+        {
+            shooter1.startAnimation(actionName);
+            shooter2.startAnimation(actionName);
+        }
+    }
+
+    private void Attack()
+    {
+        if (shooterNum == 1)
+        {
+            shooterNum = 2;
+            shooter1.startAnimation("attack");
+        }
+        else
+        {
+            shooterNum = 1;
+            shooter2.startAnimation("attack");
+        }
+    }
+
+    public override void Release()
+    {
+        GameLoader.Instance.UnLoadGameObject(towerAsset);
+    }
+
+    public override void Update()
+    {
+        this.towerObj.transform.position = this.towerInfo.GetPosition();
+    }
+}
+
