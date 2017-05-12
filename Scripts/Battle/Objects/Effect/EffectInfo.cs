@@ -37,7 +37,7 @@ public class EffectInfo
     {
         pos = new Vector3(x, y, z);
     }
-    public void Update()
+    public virtual void Update()
     {
         if (loop)
         {
@@ -52,7 +52,7 @@ public class EffectInfo
         }
     }
 
-    public void Release()
+    public virtual void Release()
     {
 
     }

@@ -105,9 +105,9 @@ public class Test1 : MonoBehaviour {
         GameObject uiroot = GameObject.Find("Canvas").gameObject;
         UiManager.Instance.Init(uiroot);
 
-        PathLoader pathloader = new PathLoader();
-        pathloader.LoadPath("level1");
-        PathInfo path = pathloader.GetPath("1");
+        //PathLoader pathloader = new PathLoader();
+        //pathloader.LoadPath("level1");
+        //PathInfo path = pathloader.GetPath("1");
         //path.PrintAllPoint();
 
         
